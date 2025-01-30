@@ -68,17 +68,49 @@ async function calculateFileHash(filePath: string): Promise<string> {
 }
 
 async function generateSummary(filePath: string): Promise<string> {
-  const content = await fs.readFile(filePath, 'utf-8');
-  const fileExt = path.extname(filePath);
-  
-  const message = await anthropic.messages.create({
-    model: 'claude-3-haiku-20240307',
-    max_tokens: 1024,
-    messages: [{
-      role: 'user',
-      content: `Please provide a concise summary of this ${fileExt} file content. Focus on its main purpose and key functionality:\n\n${content}`
-    }]
-  });
+    const content = await fs.readFile(filePath, 'utf-8');
+    const fileExt = path.extname(filePath);
+    const fileName = path.basename(filePath);
+
+    // Enhanced prompt with RAG-specific requirements
+    const systemPrompt = `You are a technical documentation expert creating summaries for a Retrieval Augmented Generation system. 
+  Generate summaries that:
+  1. Identify key entities, concepts, and relationships
+  2. Highlight unique terminology and domain-specific language
+  3. Note important numerical data or statistics
+  4. Maintain semantic relationships between concepts
+  5. Include specific function/class/method names where applicable
+  6. Preserve important technical specifications and dependencies
+  7. Mention error conditions or edge cases documented in the content`;
+
+    const userPrompt = `Create a RAG-optimized summary for ${fileName} (${fileExt}) that will help in semantic search and question answering.
+  Consider the following aspects:
+  ${getFileTypeSpecificPrompt(fileExt)}
+
+  Structure your response as:
+  <summary>
+    <purpose>Concise description of primary purpose</purpose>
+    <key_components>
+      ${getComponentList(fileExt)}
+    </key_components>
+    <dependencies>${getDependencyInfo(fileExt)}</dependencies>
+    <unique_characteristics>Distinctive features or patterns</unique_characteristics>
+    <methods>a list of all public and private method names in the code</methods>
+    <exports if any>all the exports and what they are</exports if any>
+    <any other information that you think an llm looking at a summary of all files in the repo would need to know></any other information...>
+  </summary>
+
+  Avoid markdown formatting. Keep technical terms intact. Prioritize searchability and factual density.`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: [{
+        role: 'user',
+        content: `${userPrompt}\n\nFile Content:\n${truncateContent(content, 12000)}` 
+      }]
+    });
 
   // Check if we have content and it's a text block
   const firstBlock = message.content[0];
@@ -265,6 +297,62 @@ async function main(): Promise<void> {
     console.error('Error:', error);
     process.exit(1);
   }
+}
+
+// Helper functions for dynamic prompt construction
+function getFileTypeSpecificPrompt(ext: string): string {
+  const prompts: { [key: string]: string } = {
+    '.ts': `- Key classes/interfaces and their responsibilities
+- Main exported functions/constants
+- Critical type definitions
+- Notable algorithms or patterns
+- Important dependencies/imports
+- Configuration requirements`,
+    '.json': `- Primary purpose of the configuration
+- Critical keys and their significance
+- Default values and overrides
+- Relationships between configuration properties
+- Environment-specific settings`,
+    '.txt': `- Core concepts and entities
+- Relationships between mentioned items
+- Quantitative data points
+- Process flows or workflows
+- Decision criteria or business rules`,
+    '.jsx': `- Component hierarchy and relationships
+- Key props and state management
+- Important lifecycle methods
+- UI interaction patterns
+- Data fetching strategies
+- Accessibility features`
+  };
+
+  return prompts[ext] || `- Main entities and their relationships
+- Key processes or workflows
+- Important numerical values or thresholds
+- Decision-making criteria
+- Business rules or validation logic`;
+}
+
+function getComponentList(ext: string): string {
+  const components: { [key: string]: string } = {
+    '.ts': 'List notable exports, classes, functions, types',
+    '.json': 'List critical configuration keys and groups',
+    '.txt': 'List key entities, concepts, and relationships',
+    '.jsx': 'List main components, props, state variables'
+  };
+  return components[ext] || 'List key components and their purposes';
+}
+
+function getDependencyInfo(ext: string): string {
+  return ext === '.ts' ? 
+    'List critical npm dependencies and peer dependencies' : 
+    'Document any cross-file or external dependencies';
+}
+
+function truncateContent(content: string, maxLength: number): string {
+  return content.length > maxLength 
+    ? content.slice(0, maxLength) + '\n[...Content truncated for brevity...]' 
+    : content;
 }
 
 main();
