@@ -1,206 +1,178 @@
-# Scripts Documentation
-
 This directory contains utility scripts for codebase analysis, structure visualization, and file summarization. These tools are designed to help developers and AI systems better understand and interact with the codebase.
+Table of Contents
 
-## Table of Contents
-- [Scripts Overview](#scripts-overview)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  - [Codebase Capture](#codebase-capture)
-  - [Git Diff Generation](#git-diff-generation)
-  - [Directory Structure Analysis](#directory-structure-analysis)
-  - [File Summarization](#file-summarization)
+    Scripts Overview
 
-## Scripts Overview
+    Installation
 
-### 🗂️ `captureCodebase.ts`
+    Configuration
+
+    Usage
+
+        Codebase Capture
+
+        Git Diff Generation
+
+        Directory Structure Analysis
+
+        File Summarization
+
+Scripts Overview
+🗂️ captureCodebase.ts
+
 Captures a snapshot of your codebase while respecting include/exclude patterns. Useful for documentation and analysis.
 
-**Key Features:**
-- Configurable file inclusion via CSV patterns
-- Smart directory/file filtering
-- Support for regex and simple pattern matching
-- Outputs formatted content to `paste.txt`
+Key Features:
 
-### 📊 `diff.ts`
-Generates formatted Git diffs with commit message templates. Perfect for code review and documentation.
+    Configurable file inclusion via CSV patterns (simple/regex)
 
-**Key Features:**
-- Capture staged changes
-- Generates commit message templates
-- Ignores whitespace changes
-- Includes bash script header for easy execution
+    Outputs matched file contents to paste.txt
 
-### 🌳 `getStructure.ts`
-Creates a visual representation of your codebase structure with token counting for files.
+    Built-in exclusion of common non-source directories
 
-**Key Features:**
-- Tree-style directory visualization
-- Token count estimation for files
-- Generates LLM-friendly prompts with directory structure
-- Clipboard support for easy sharing
-- Single output format optimized for LLM interaction
+📊 diff.ts
 
-### 📝 `rag.ts`
-Generates AI-powered summaries of code files using Claude 3 Haiku. Maintains a cache of summaries and updates them when files change.
+Generates Git diffs for code review and documentation.
 
-**Key Features:**
-- Automatic file change detection
-- Cached summaries with metadata
-- Configurable file type filtering
-- Hierarchical summary storage
-- Error handling and recovery
+Key Features:
 
-## Installation
+    Captures staged changes
 
-1. Install dependencies:
-```bash
+    Includes whitespace-ignored diffs
+
+    Requires an active Git repository
+
+🌳 getStructure.ts
+
+Creates a directory structure map with file token counts.
+
+Key Features:
+
+    Hierarchical directory tree output
+
+    Token estimation (4 characters = 1 token)
+
+    Copies LLM-friendly prompt to clipboard
+
+    Writes structure to paste.txt
+
+📝 rag.ts
+
+Generates AI-powered file summaries using Claude 3 Haiku.
+
+Key Features:
+
+    Summary caching with MD5 hash validation
+
+    Metadata tracking (timestamps, file paths)
+
+    Configurable file extensions
+
+    Error handling for API/file operations
+
+Installation
+
+    Install dependencies:
+
+bash
+Copy
+
 npm install
-```
 
-2. Set up environment variables:
-```bash
-# Required for rag.ts
-ANTHROPIC_API_KEY=your_api_key
-```
+    Set up environment variables:
 
-## Configuration
+bash
+Copy
 
-### Common Ignore Patterns
-All scripts use similar ignore patterns for consistency:
-```typescript
-const ignorePatterns = [
-  'node_modules',
-  'dist',
-  'build',
-  'coverage',
-  '.git',
-  '.cache',
-  '.next',
-  '__pycache__',
-  '.DS_Store',
-  'package-lock.json'
-];
-```
+echo "ANTHROPIC_API_KEY=your_api_key" >> .env  # Required for rag.ts
 
-### Include Patterns (captureCodebase.ts)
-Create an `input.csv` file to specify which files to include:
-```csv
-# Format: pattern,type
-# Types: simple, regex
+Configuration
+Common Ignore Patterns
+typescript
+Copy
+
+[
+  'node_modules', '.git', 'dist', 'build',
+  '.next', '__pycache__', 'package-lock.json'
+]
+
+File Extensions (Default)
+typescript
+Copy
+
+['.ts', '.js', '.tsx', '.jsx', '.json', '.txt', '.d.ts']
+
+Pattern File Example (input.csv)
+csv
+Copy
+
+# pattern,type
 src/**/*.ts,simple
 test/.*\.spec\.ts,regex
-```
 
-### File Extensions
-Default included extensions:
-```typescript
-const includeExtensions = [
-  '.ts',
-  '.tsx',
-  '.txt',
-  '.js',
-  '.jsx',
-  '.json',
-  '.d.ts'
-];
-```
+Usage
+Codebase Capture
+bash
+Copy
 
-## Usage
+npm run capture [directory] [patterns.csv]
 
-### Codebase Capture
+Git Diff Generation
+bash
+Copy
 
-```bash
-# Basic usage (uses current directory)
-npm run capture
+npm run diff [commit/branch]
 
-# Specify directory and pattern file
-npm run capture /path/to/project /path/to/patterns.csv
+Directory Structure Analysis
+bash
+Copy
 
-# Verbose output
-npm run capture:verbose
-```
-
-### Git Diff Generation
-
-```bash
-# Capture staged changes
-npm run diff
-
-# Compare with specific branch/commit
-npm run diff origin/main
-
-# Verbose output
-npm run diff:verbose
-```
-
-### Directory Structure Analysis
-
-```bash
-# Generate structure files
 npm run structure
 
-# Outputs:
-# - paste.txt (LLM instruction prompt with directory structure)
-```
+File Summarization
+bash
+Copy
 
-### File Summarization
-
-```bash
-# Generate summaries for all matching files
 npm run rag
 
-# Summaries are stored in /summaries directory
-# Format: /summaries/path/to/file.ts.summary.json
-```
+Output Files
+paste.txt
 
-## Output Files
+    Capture: Selected file contents
 
-### `paste.txt`
-- Generated by multiple scripts
-- Contains formatted output ready for sharing
-- Different format depending on the script:
-  - `captureCodebase.ts`: Full file contents
-  - `diff.ts`: Git diff with commit template
-  - `getStructure.ts`: LLM instruction prompt
+    Structure: Directory tree with token counts
 
+    Diff: Git diff output
 
+Summary Files (/summaries/*.json)
+json
+Copy
 
-### Summary Files
-- Generated by `rag.ts`
-- Stored in `/summaries` directory
-- JSON format with metadata:
-  ```json
-  {
-    "filePath": "relative/path/to/file.ts",
-    "summary": "AI-generated summary content",
-    "lastUpdated": "ISO timestamp",
-    "fileHash": "MD5 hash for change detection"
-  }
-  ```
+{
+  "filePath": "src/rag.ts",
+  "summary": "AI-generated summary content",
+  "lastUpdated": "ISO timestamp",
+  "fileHash": "MD5 hash"
+}
 
-## Error Handling
+Error Handling
 
-All scripts include robust error handling:
-- File system errors
-- Pattern parsing errors
-- Git command failures
-- API communication errors
-- JSON parsing/writing errors
+All scripts include:
 
-## Contributing
+    File system error detection
 
-When modifying these scripts, please:
-1. Maintain consistent ignore patterns
-2. Update documentation for new features
-3. Test with various file types and structures
-4. Keep error handling comprehensive
-5. Follow existing code style
+    Pattern validation
 
-## Notes
+    API error handling (rag.ts)
 
-- Token counting is an estimate (4 characters = 1 token)
-- Summaries are generated using Claude 3 Haiku
-- Git diff capture requires a git repository
-- Large files may impact performance
+    JSON read/write safeguards
+
+Notes
+
+    Token counting uses fixed 4:1 character-to-token ratio
+
+    Requires Git repository for diff functionality
+
+    First summary generation may take longer for large projects
+
+    Keep .env file secure (contains API key)
