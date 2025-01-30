@@ -1,0 +1,6 @@
+{
+  "filePath": "src\\captureCodebase.ts",
+  "summary": "This TypeScript file provides a `CodebaseCapture` class that is designed to capture the content of a codebase, including file contents and directory structure, based on specified include and exclude patterns. Key functionality: 1. **Pattern Loading**: The class loads include patterns from a CSV file (or defaults to including all files if the file is not found). The patterns can be either simple glob patterns or regular expressions. 2. **Scanning Directory**: The `scanDirectory` method recursively scans the specified root directory, capturing the file contents and directory structure, while respecting the configured include and exclude patterns. 3. **Output Generation**: The `formatOutput` method takes the captured directory structure and generates a string output, which is then written to a file named `paste.txt`. 4. **Command-line Execution**: The file also includes a command-line execution block, which allows the user to run the `CodebaseCapture` class with the specified root directory and CSV file path as arguments. The main purpose of this class is to provide a way to capture the contents of a codebase, which can be useful for various tasks such as code analysis, backup, or sharing code snippets.",
+  "lastUpdated": "2025-01-30T00:34:24.714Z",
+  "fileHash": "a7e02793d92ab2e794cd758162924e6d"
+}
