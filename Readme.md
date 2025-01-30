@@ -1,21 +1,4 @@
 This directory contains utility scripts for codebase analysis, structure visualization, and file summarization. These tools are designed to help developers and AI systems better understand and interact with the codebase.
-Table of Contents
-
-    Scripts Overview
-
-    Installation
-
-    Configuration
-
-    Usage
-
-        Codebase Capture
-
-        Git Diff Generation
-
-        Directory Structure Analysis
-
-        File Summarization
 
 Scripts Overview
 🗂️ captureCodebase.ts
