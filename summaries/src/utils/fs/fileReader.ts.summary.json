@@ -1,0 +1,6 @@
+{
+  "filePath": "src\\utils\\fs\\fileReader.ts",
+  "summary": "<summary> <purpose>The FileReader class provides a set of utility functions for reading files synchronously, with error handling and optional token counting.</purpose> <key_components> - FileReader class - readFile() function - readFileSync() function - isReadable() function - DEFAULT_OPTIONS constant - calculateTokens() function - checkFileSize() function </key_components> <dependencies> - fs (Node.js file system module) - FileReadError (custom error class) - FileReadResult (type definition) - PathUtils (utility functions for path manipulation) </dependencies> <unique_characteristics> - Provides a consistent API for file reading with error handling and optional token counting - Uses a simple heuristic to estimate token count based on file content length - Checks file size to ensure it doesn't exceed a configured maximum - Includes a function to check if a file is readable </unique_characteristics> <methods> - readFile(filepath, options) - readFileSync(filepath, options) - isReadable(filepath) - calculateTokens(content) - checkFileSize(filepath, maxSize) </methods> <exports if any> - FileReader class </exports if any> </summary>",
+  "lastUpdated": "2025-01-30T19:26:22.987Z",
+  "fileHash": "3e8ccc481d7a4a2d29d31560c77f9142"
+}
