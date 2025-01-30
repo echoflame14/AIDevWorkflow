@@ -43,11 +43,12 @@ const config: Config = {
     '.cache',
     '.next',
     '__pycache__',
-    'summaries'  // Keep this from original config to store summaries
+    'summaries'
   ],
   ignoreFiles: [
     '.DS_Store',
-    'package-lock.json'
+    'package-lock.json',
+    'paste.txt'
   ],
   // Only include these extensions (inverse of ignore)
   ignoreExtensions: [

@@ -1,6 +1,0 @@
-{
-  "filePath": "paste.txt",
-  "summary": "The provided .txt file contains a Bash script that is designed to capture the structure and content of a codebase based on specified inclusion patterns. The main purpose of this script is to generate a commit command that can be used to track changes in the codebase. Key functionality: 1. **Inclusion Patterns**: The script allows users to provide a CSV file containing patterns to include or exclude files and directories during the capture process. It supports both literal patterns and regular expressions. 2. **Codebase Capture**: The `CodebaseCapture` class is responsible for recursively scanning the specified root directory, constructing a directory structure, and capturing the content of the included files. 3. **Output Formatting**: The captured codebase structure and file contents are formatted into a string that can be used as the commit message's summary and detailed changes. 4. **Command-line Execution**: The script can be executed from the command line, allowing users to specify the root directory for the capture operation. The script is designed to be a tool for developers to easily track changes in their codebase by generating a commit command with a semantic commit message and detailed file changes.",
-  "lastUpdated": "2025-01-30T18:39:48.670Z",
-  "fileHash": "9d9523c92b984b3723914f5d401a1111"
-}
