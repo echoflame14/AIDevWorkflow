@@ -37,13 +37,14 @@ class StructureScanner {
             'Current directory structure:',
             structure,
             '',
-            'The /summaries directory contains overview summaries for most files.',
+            'The /summaries directory contains overview summaries for most files. and should be a priority to pull in relevant rag data befgore we get started.',
             '',
             'Please provide your analysis in these steps:',
             '1. List files needed to understand the context',
             '2. Specific code sections to focus on',
             '3. Areas where you need additional context',
-            ''
+            'Then provide your selected context files that I will provide to you using a script that will intake the following input.csv that you will generate for me',
+            'gimme full filepaths in the csv src/example/example.ts'
         ].join('\n');
     }
 
