@@ -1,22 +1,44 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+/**
+ * Represents a file's information including its path and content
+ */
 interface FileInfo {
+    /** Relative path to the file from the root directory */
     path: string;
+    /** Content of the file */
     content: string;
 }
 
+/**
+ * Represents a directory structure containing files and subdirectories
+ */
 interface DirectoryStructure {
+    /** List of files in the directory */
     files?: FileInfo[];
+    /** Map of subdirectory names to their structures */
     dirs?: Record<string, DirectoryStructure>;
 }
 
+/**
+ * Represents a pattern for including files in the capture
+ */
 interface IncludePattern {
+    /** Pattern to match file paths against */
     pattern: string;
+    /** Whether the pattern is a regular expression */
     isRegex: boolean;
 }
 
+/**
+ * Class for capturing a codebase structure and content based on inclusion patterns
+ */
 class CodebaseCapture {
+    /**
+     * Set of directory and file names to ignore by default
+     * @private
+     */
     private readonly ignorePatterns = new Set([
         'node_modules',
         'dist',
@@ -32,11 +54,30 @@ class CodebaseCapture {
         'codebase-snapshot.json'
     ]);
 
+    /**
+     * List of patterns for files/directories to include
+     * @private
+     */
     private includePatterns: IncludePattern[] = [];
+    
+    /**
+     * Root directory for the capture operation
+     * @private
+     */
     private rootDir: string = '';
 
+    /**
+     * Creates an instance of CodebaseCapture
+     * @param {string} [csvPath='input.csv'] - Path to CSV file containing include patterns
+     */
     constructor(private readonly csvPath: string = 'input.csv') {}
 
+    /**
+     * Parses pattern input from CSV content
+     * @private
+     * @param {string} content - CSV file content to parse
+     * @returns {IncludePattern[]} Array of parsed include patterns
+     */
     private parsePatternInput(content: string): IncludePattern[] {
         if (!content.trim()) {
             // If no patterns provided, include everything
@@ -59,6 +100,11 @@ class CodebaseCapture {
             });
     }
 
+    /**
+     * Loads include patterns from CSV file
+     * @private
+     * @throws {Error} If file read fails, falls back to including all files
+     */
     private loadPatterns(): void {
         try {
             // If the CSV file doesn't exist, include everything
@@ -88,6 +134,12 @@ class CodebaseCapture {
         }
     }
 
+    /**
+     * Determines if a file/directory should be included in the capture
+     * @private
+     * @param {string} entryPath - Full path to the file/directory
+     * @returns {boolean} True if the entry should be captured
+     */
     private shouldCapture(entryPath: string): boolean {
         const relativePath = path.relative(this.rootDir, entryPath).replace(/\\/g, '/');
         const basename = path.basename(entryPath);
@@ -122,6 +174,12 @@ class CodebaseCapture {
         });
     }
 
+    /**
+     * Reads file content with error handling
+     * @private
+     * @param {string} filepath - Path to the file to read
+     * @returns {string} File content or empty string if read fails
+     */
     private readFileContent(filepath: string): string {
         try {
             return fs.readFileSync(filepath, { encoding: 'utf-8' });
@@ -132,6 +190,12 @@ class CodebaseCapture {
         }
     }
 
+    /**
+     * Recursively scans a directory and constructs its structure
+     * @private
+     * @param {string} currentPath - Path to scan
+     * @returns {DirectoryStructure} Scanned directory structure
+     */
     private scanDirectory(currentPath: string): DirectoryStructure {
         const structure: DirectoryStructure = {};
         
@@ -172,6 +236,12 @@ class CodebaseCapture {
         return structure;
     }
 
+    /**
+     * Formats directory structure into a string output
+     * @private
+     * @param {DirectoryStructure} structure - Directory structure to format
+     * @returns {string} Formatted string with file contents
+     */
     private formatOutput(structure: DirectoryStructure): string {
         let output = '';
 
@@ -203,6 +273,10 @@ class CodebaseCapture {
         return output.trim();
     }
 
+    /**
+     * Main method to execute codebase capture
+     * @param {string} rootDir - Root directory to capture
+     */
     public capture(rootDir: string): void {
         console.log('Starting codebase capture...');
         this.rootDir = rootDir;
@@ -224,7 +298,7 @@ class CodebaseCapture {
     }
 }
 
-// Command-line execution
+// Command-line execution support
 if (require.main === module) {
     const args = process.argv.slice(2);
     const rootDir = args[0] || process.cwd();
