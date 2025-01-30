@@ -1,0 +1,7 @@
+node_modules/
+dist/
+summaries/
+paste.txt
+input.csv
+.env
+.DS_Store
