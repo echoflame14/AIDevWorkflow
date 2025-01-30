@@ -54,7 +54,7 @@ const config: Config = {
   ignoreExtensions: [
     // Include only these (everything else is ignored):
     // .ts, .tsx, .txt, .js, .jsx, .json, .d.ts
-    '.jpg', '.png', '.gif', '.mp4', '.mp3', '.pdf', '.md', '.csv', 
+    '.jpg', '.png', '.gif', '.mp4', '.mp3', '.pdf', '.csv', 
     '.yaml', '.yml', '.lock', '.env', '.log', '.sql', '.sh', '.bash',
     '.zsh', '.fish', '.ps1', '.bat', '.cmd', '.exe', '.dll', '.so',
     '.dylib', '.tar', '.gz', '.zip', '.rar', '.7z', '.ico', '.svg',
@@ -171,7 +171,9 @@ const INCLUDE_EXTENSIONS = new Set([
   '.js',
   '.jsx',
   '.json',
-  '.d.ts'
+  '.d.ts',
+  '.md',
+  '.gitignore'
 ]);
 
 async function shouldProcessFile(filePath: string): Promise<boolean> {
