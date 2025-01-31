@@ -85,24 +85,38 @@ export class DiffCapturer {
         try {
             const diffOutput = this.executeGitDiff(target);
             const commitPrompt = `#!/bin/bash
-# Auto-generated commit command builder | paste into terminal
-# INSTRUCTIONS:
-# 1. AI should generate a single -m argument for semantic commits
-# 2. Format: "type(scope): brief summary"
-# 3. Use bullet points for detailed changes
-# 4. Escape quotes with \\"
-echo "Generated commit command:"
-echo "git commit -m \\"`;
-
-            const header = `# DIFF CONTENT BELOW - ${new Date().toISOString()}\n` +
-                        `# git diff ${target || 'HEAD'}\n\n` +
-                        `cat << 'EOF'\n`;
-        
+    # Auto-generated commit command builder | paste into terminal
+    # INSTRUCTIONS:
+    # 1. Generate semantic header: "type(scope): brief technical summary"
+    # 2. Add bullet points with key changes
+    # 3. Include layman explanation: "This change [what it does] to [system part] so that [user benefit]"
+    #
+    # Example:
+    # git commit -m \\"feat(auth): add password complexity check
+    # - Implement minimum length requirement
+    # - Add special character validation
+    # - Update password error messages
+    #
+    # Explanation: This makes user accounts more secure by requiring stronger passwords and clearly explaining the requirements\\"
+    
+    echo "Generated commit command:"
+    echo "git commit -m \\"`;
+    
+            const explanationHeader = `# SEMANTIC COMMIT STRUCTURE\n` +
+                `# Format: type(scope): message\n` +
+                `# Allowed types: feat|fix|docs|style|refactor|test|chore\n\n` +
+                `# LAYMAN EXPLANATION CONTEXT\n` +
+                `# What does this change do? (non-technical):\n` +
+                `# Who benefits from this change?:\n\n` +
+                `# TECHNICAL DETAILS\n` +
+                `# Generated ${new Date().toISOString()}\n` +
+                `# git diff ${target || 'HEAD'}\n\n` +
+                `cat << 'EOF'\n`;
+    
             const footer = `EOF\n`;
-        
-            const content = commitPrompt + header + diffOutput + footer;
-
-            // Use FileReader to write the output file
+            
+            const content = commitPrompt + explanationHeader + diffOutput + footer;
+    
             try {
                 require('fs').writeFileSync(
                     this.outputFile,
