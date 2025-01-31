@@ -68,57 +68,57 @@ async function calculateFileHash(filePath: string): Promise<string> {
 }
 
 async function generateSummary(filePath: string): Promise<string> {
-    const content = await fs.readFile(filePath, 'utf-8');
-    const fileExt = path.extname(filePath);
-    const fileName = path.basename(filePath);
+  const content = await fs.readFile(filePath, 'utf-8');
+  const fileExt = path.extname(filePath);
+  const fileName = path.basename(filePath);
 
-    // Enhanced prompt with RAG-specific requirements
-    const systemPrompt = `You are a technical documentation expert creating summaries for a Retrieval Augmented Generation system. 
-  Generate summaries that:
-  1. Identify key entities, concepts, and relationships
-  2. Highlight unique terminology and domain-specific language
-  3. Note important numerical data or statistics
-  4. Maintain semantic relationships between concepts
-  5. Include specific function/class/method names where applicable
-  6. Preserve important technical specifications and dependencies
-  7. Mention error conditions or edge cases documented in the content`;
+  // Enhanced prompt with RAG-specific requirements
+  const systemPrompt = `You are a technical documentation expert creating summaries for a Retrieval Augmented Generation system. 
+Generate summaries that:
+1. Identify key entities, concepts, and relationships
+2. Highlight unique terminology and domain-specific language
+3. Note important numerical data or statistics
+4. Maintain semantic relationships between concepts
+5. Include specific function/class/method names where applicable
+6. Preserve important technical specifications and dependencies
+7. Mention error conditions or edge cases documented in the content`;
 
-    const userPrompt = `Create a RAG-optimized summary for ${fileName} (${fileExt}) that will help in semantic search and question answering.
-  Consider the following aspects:
-  ${getFileTypeSpecificPrompt(fileExt)}
+  const userPrompt = `Create a RAG-optimized summary for ${fileName} (${fileExt}) that will help in semantic search and question answering.
+Consider the following aspects:
+${getFileTypeSpecificPrompt(fileExt)}
 
-  Structure your response as:
-  <summary>
-    <purpose>Concise description of primary purpose</purpose>
-    <key_components>
-      ${getComponentList(fileExt)}
-    </key_components>
-    <dependencies>${getDependencyInfo(fileExt)}</dependencies>
-    <unique_characteristics>Distinctive features or patterns</unique_characteristics>
-    <methods>a list of all public and private method names in the code</methods>
-    <exports if any>all the exports and what they are</exports if any>
-    <any other information that you think an llm looking at a summary of all files in the repo would need to know></any other information...>
-  </summary>
+Structure your response as:
+<summary>
+  <purpose>Concise description of primary purpose</purpose>
+  <key_components>
+    ${getComponentList(fileExt)}
+  </key_components>
+  <dependencies>${getDependencyInfo(fileExt)}</dependencies>
+  <unique_characteristics>Distinctive features or patterns</unique_characteristics>
+  <methods>a list of all public and private method names in the code</methods>
+  <exports if any>all the exports and what they are</exports if any>
+  <any other information that you think an llm looking at a summary of all files in the repo would need to know></any other information...>
+</summary>
 
-  Avoid markdown formatting. Keep technical terms intact. Prioritize searchability and factual density.`;
+Avoid markdown formatting. Keep technical terms intact. Prioritize searchability and factual density.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [{
-        role: 'user',
-        content: `${userPrompt}\n\nFile Content:\n${truncateContent(content, 12000)}` 
-      }]
-    });
+  const message = await anthropic.messages.create({
+    model: 'claude-3-haiku-20240307',
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages: [{
+      role: 'user',
+      content: `${userPrompt}\n\nFile Content:\n${truncateContent(content, 12000)}` 
+    }]
+  });
 
-  // Check if we have content and it's a text block
-  const firstBlock = message.content[0];
-  if (!firstBlock || firstBlock.type !== 'text') {
-    throw new Error('Expected a text response from Claude');
-  }
+// Check if we have content and it's a text block
+const firstBlock = message.content[0];
+if (!firstBlock || firstBlock.type !== 'text') {
+  throw new Error('Expected a text response from Claude');
+}
 
-  return firstBlock.text;
+return firstBlock.text;
 }
 
 async function saveSummary(filePath: string, summary: string): Promise<void> {
