@@ -34,17 +34,34 @@ class StructureScanner {
 
     private generatePrompt(structure: string): string {
         return [
+            'I need you to help me solve for the current issue I am facing or trying to solve or support me in devolpment in general of the following app',
             'Current directory structure:',
             structure,
             '',
-            'The /summaries directory contains overview summaries for most files. and should be a priority to pull in relevant rag data befgore we get started.',
+            'The /summaries directory contains prioritized overview summaries that should be analyzed first.',
             '',
-            'Please provide your analysis in these steps:',
-            '1. List files needed to understand the context',
-            '2. Specific code sections to focus on',
-            '3. Areas where you need additional context',
-            'Then provide your selected context files that I will provide to you using a script that will intake the following input.csv that you will generate for me',
-            'gimme full filepaths in the csv src/example/example.ts'
+            'Token-efficient analysis requirements:',
+            '1. Essential Context Files (Prioritize Conciseness):',
+            '   - grab stuff like readme.md or documentation files.',
+            '   - Add other summaries if needed for current analysis',
+            '',
+            '2. Critical Code Sections (3-5 Key Items Max):',
+            '',
+            '3. Context Gaps (2-3 Critical Items):',
+            '   - Only missing summaries that block understanding',
+            '   - Ambiguities with actual code impact',
+            '',
+            'Generate input.csv using EXACT format:',
+            'filepath',
+            'summaries/overview.md',
+            'summaries/architecture.md',
+            '',
+            'CSV Rules:',
+            '- Preserve exact header: "filepath"',
+            '',
+            'Token Conservation:',
+            '- take into account the token size for each file you include in the csv and try to stay under 10k tokens total',
+           
         ].join('\n');
     }
 
